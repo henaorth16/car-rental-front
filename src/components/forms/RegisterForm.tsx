@@ -9,54 +9,58 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 
-type LoginFormValues = {
+type RegisterFormValues = {
+  name: string;
   email: string;
   password: string;
 };
 
-export default function LoginForm() {
+export default function RegisterForm() {
   const router = useRouter();
 
-  const form = useForm<LoginFormValues>({
+  const form = useForm<RegisterFormValues>({
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
   });
 
-  const loginMutation = useMutation({
-    mutationFn: async (data: LoginFormValues) => {
-      const res = await api.post("/auth/login", data);
+  const registerMutation = useMutation({
+    mutationFn: async (data: RegisterFormValues) => {
+      const res = await api.post("/auth/register", data);
       return res.data;
     },
     onSuccess: (data) => {
-      // save token
-      localStorage.setItem("token", data.token);
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
 
       // redirect
       router.push("/cars");
     },
     onError: (error: any) => {
       console.error(error);
-      alert(error?.response?.data?.error || "Login failed");
+      alert(error?.response?.data?.error || "Registration failed");
     },
   });
 
-  const onSubmit = (values: LoginFormValues) => {
-    loginMutation.mutate(values);
+  const onSubmit = (values: RegisterFormValues) => {
+    registerMutation.mutate(values);
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Card className="w-full max-w-sm p-6">
         <CardContent>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
-          >
-            <h2 className="text-xl font-semibold text-center">
-              Login
-            </h2>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <h2 className="text-xl font-semibold text-center">Register</h2>
+
+            <Input
+              placeholder="Name"
+              type="text"
+              {...form.register("name", { required: true })}
+            />
 
             <Input
               placeholder="Email"
@@ -73,9 +77,9 @@ export default function LoginForm() {
             <Button
               type="submit"
               className="w-full"
-              disabled={loginMutation.isPending}
+              disabled={registerMutation.isPending}
             >
-              {loginMutation.isPending ? "Logging in..." : "Login"}
+              {registerMutation.isPending ? "Registering..." : "Register"}
             </Button>
           </form>
         </CardContent>
