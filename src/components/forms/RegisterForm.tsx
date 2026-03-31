@@ -28,7 +28,7 @@ export default function RegisterForm() {
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegisterFormValues) => {
-      const res = await api.post("/auth/register", data);
+      const res = await api.post("/api/auth/sign-up/email", data);
       return res.data;
     },
     onSuccess: (data) => {
@@ -71,6 +71,7 @@ export default function RegisterForm() {
             <Input
               placeholder="Password"
               type="password"
+              
               {...form.register("password", { required: true })}
             />
 
