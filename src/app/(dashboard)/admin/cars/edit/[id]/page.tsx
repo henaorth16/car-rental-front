@@ -7,8 +7,10 @@ import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, Car as CarIcon } from "lucide-react";
 import Link from "next/link";
 
-export default function EditCarPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+import React from "react";
+
+export default function EditCarPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
   const { data: car } = useQuery({
     queryKey: ["car", id],
     queryFn: () => api.get<{car: Car}>(`/api/cars/${id}`).then((res) => res.data.car),
@@ -36,9 +38,9 @@ export default function EditCarPage({ params }: { params: { id: string } }) {
           <CarIcon className="h-6 w-6 text-primary" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Add New Car</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Edit Car</h1>
           <p className="text-sm text-muted-foreground">
-            Fill in the details below to add a car to the fleet.
+            Update the car's details and photos.
           </p>
         </div>
       </div>

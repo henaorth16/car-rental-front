@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/axios";
 import { Car, FuelType, Transmission, NewCarFormValues } from "@/types/car";
+import { useState, useRef, useEffect } from "react";
 
 import {
   Card,
@@ -15,7 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, ImageIcon } from "lucide-react";
+import { Plus, Trash2, ImageIcon, Upload, X } from "lucide-react";
 import Link from "next/link";
 
 const CAR_TYPES = [
@@ -39,6 +40,13 @@ interface CarFormProps {
 export default function CarForm({ initialData }: CarFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [filePreviews, setFilePreviews] = useState<string[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>(
+    initialData?.images?.map(img => img.url) || []
+  );
 
   const isEdit = !!initialData;
 
@@ -54,7 +62,7 @@ export default function CarForm({ initialData }: CarFormProps) {
           seats: initialData.seats,
           doors: initialData.doors,
           color: initialData.color,
-          images: initialData.images,
+          images: initialData.images, // We still keep this in defaultValues but will manage submission manually
           pricePerDay: initialData.pricePerDay,
           available: initialData.available,
         }
@@ -83,19 +91,43 @@ export default function CarForm({ initialData }: CarFormProps) {
   } = form;
 
   const carMutation = useMutation({
-    mutationFn: async (data: NewCarFormValues) => {
-      const payload = {
-        ...data,
-        pricePerDay: Number(data.pricePerDay),
-        seats: Number(data.seats),
-        doors: Number(data.doors),
+    mutationFn: async (values: NewCarFormValues) => {
+      const formData = new FormData();
+
+      // Append all text/numeric fields
+      formData.append("brand", values.brand);
+      formData.append("model", values.model);
+      formData.append("type", values.type);
+      formData.append("fuelType", values.fuelType);
+      formData.append("transmission", values.transmission);
+      formData.append("description", values.description);
+      formData.append("color", values.color);
+      formData.append("seats", String(values.seats));
+      formData.append("doors", String(values.doors));
+      formData.append("pricePerDay", String(values.pricePerDay));
+      formData.append("available", String(values.available));
+
+      // Append existing images that were kept
+      existingImages.forEach((url) => {
+        formData.append("existingImages", url);
+      });
+
+      // Append new files
+      selectedFiles.forEach((file) => {
+        formData.append("images", file);
+      });
+
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       };
 
       if (isEdit && initialData) {
-        const res = await api.put<Car>(`/api/cars/${initialData.id}`, payload);
+        const res = await api.put<Car>(`/api/cars/${initialData.id}`, formData, config);
         return res.data;
       } else {
-        const res = await api.post<Car>("/api/cars", payload);
+        const res = await api.post<Car>("/api/cars", formData, config);
         return res.data;
       }
     },
@@ -110,6 +142,34 @@ export default function CarForm({ initialData }: CarFormProps) {
     carMutation.mutate(values);
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    setSelectedFiles((prev) => [...prev, ...files]);
+    
+    // Create previews
+    const newPreviews = files.map((file) => URL.createObjectURL(file));
+    setFilePreviews((prev) => [...prev, ...newPreviews]);
+  };
+
+  const removeSelectedFile = (index: number) => {
+    URL.revokeObjectURL(filePreviews[index]);
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    setFilePreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingImage = (index: number) => {
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Cleanup object URLs on unmount
+  useEffect(() => {
+    return () => {
+      filePreviews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [filePreviews]);
+
   const isAvailable = watch("available");
 
   return (
@@ -119,13 +179,13 @@ export default function CarForm({ initialData }: CarFormProps) {
           {isEdit ? "Edit Car Details" : "Car Details"}
         </CardTitle>
         <CardDescription>
-          All fields marked with * are required.
+          All fields marked with * are required. You can upload multiple images.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Brand & Model */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium">
                 Brand <span className="text-red-500">*</span>
@@ -181,7 +241,7 @@ export default function CarForm({ initialData }: CarFormProps) {
           </div>
 
           {/* Fuel Type & Transmission */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium">
                 Fuel Type <span className="text-red-500">*</span>
@@ -280,62 +340,78 @@ export default function CarForm({ initialData }: CarFormProps) {
             />
           </div>
 
-          {/* Image URLs */}
-          <div className="space-y-3">
+          {/* Image Upload */}
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium">
-                Image URLs <span className="text-red-500">*</span>
+                Car Images <span className="text-red-500">*</span>
               </label>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  const currentImages = watch("images") || [];
-                  setValue("images", [...currentImages, ""]);
-                }}
-                className="h-8 gap-1"
+                onClick={() => fileInputRef.current?.click()}
+                className="h-8 gap-2"
               >
-                <Plus className="h-4 w-4" />
-                Add URL
+                <Upload className="h-4 w-4" />
+                Upload Images
               </Button>
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+              />
             </div>
 
-            {(watch("images") || []).map((_, index) => (
-              <div key={index} className="flex gap-2">
-                <div className="relative flex-1">
-                  <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="https://example.com/image.jpg"
-                    className="pl-9"
-                    {...register(`images.${index}` as const, { required: true })}
-                  />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {/* Existing Images (When Editing) */}
+              {existingImages.map((url, index) => (
+                <div key={`existing-${index}`} className="relative group aspect-square rounded-lg border overflow-hidden bg-muted">
+                  <img src={url} alt="Existing" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removeExistingImage(index)}
+                    className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                  <div className="absolute bottom-0 inset-x-0 bg-black/40 py-1 text-[10px] text-white text-center">
+                    Server
+                  </div>
                 </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    const currentImages = watch("images");
-                    setValue(
-                      "images",
-                      currentImages.filter((_, i) => i !== index)
-                    );
-                  }}
-                  className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
+              ))}
 
-            {(!watch("images") || watch("images").length === 0) && (
-              <div className="text-center py-6 border-2 border-dashed rounded-lg bg-muted/30">
-                <p className="text-sm text-muted-foreground">
-                  No images added yet. Click "Add URL" to start.
-                </p>
-              </div>
-            )}
+              {/* Newly Selected Files */}
+              {filePreviews.map((preview, index) => (
+                <div key={`new-${index}`} className="relative group aspect-square rounded-lg border overflow-hidden bg-muted">
+                  <img src={preview} alt="New" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removeSelectedFile(index)}
+                    className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                  <div className="absolute bottom-0 inset-x-0 bg-primary/80 py-1 text-[10px] text-white text-center">
+                    New
+                  </div>
+                </div>
+              ))}
+
+              {existingImages.length === 0 && selectedFiles.length === 0 && (
+                <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="col-span-full border-2 border-dashed rounded-lg bg-muted/30 p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                >
+                  <ImageIcon className="h-10 w-10 text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground font-medium">No images uploaded yet</p>
+                  <p className="text-xs text-muted-foreground mt-1 text-center">Click here or the upload button to add images</p>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Price per day */}
@@ -427,3 +503,4 @@ export default function CarForm({ initialData }: CarFormProps) {
     </Card>
   );
 }
+

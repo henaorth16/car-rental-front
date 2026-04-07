@@ -7,13 +7,24 @@ import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Car as CarIcon } from "lucide-react";
 
+import { getImageUrl } from "@/lib/utils";
+
 export function CarCard({ car }: { car: Car }) {
-  console.log(car.toString())
+  const firstImage = car.images && car.images.length > 0 ? car.images[0].url : null;
+
   return (
-    <Card className="flex flex-col overflow-hidden hover:shadow-lg transition-shadow">
-      {/* Placeholder for future Image */}
-      <div className="w-full h-48 bg-muted flex items-center justify-center border-b">
-        <CarIcon className="w-16 h-16 text-muted-foreground/30" />
+    <Card className="flex flex-col overflow-hidden hover:shadow-lg transition-shadow group">
+      {/* Image Placeholder or Actual Image */}
+      <div className="w-full h-48 bg-muted flex items-center justify-center border-b relative overflow-hidden">
+        {firstImage ? (
+          <img
+            src={getImageUrl(firstImage)}
+            alt={`${car.brand} ${car.model}`}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <CarIcon className="w-16 h-16 text-muted-foreground/30" />
+        )}
       </div>
       
       <CardHeader>

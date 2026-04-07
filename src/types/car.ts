@@ -1,6 +1,13 @@
 export type FuelType = "PETROL" | "DIESEL" | "ELECTRIC" | "HYBRID";
 export type Transmission = "AUTOMATIC" | "MANUAL";
 
+export interface CarImage {
+  id: string;
+  url: string;
+  carId: string;
+  createdAt: string;
+}
+
 export interface Car {
   id: string;
   brand: string;
@@ -12,7 +19,7 @@ export interface Car {
   seats: number;
   doors: number;
   color: string;
-  images: string[];
+  images: CarImage[];
   pricePerDay: number;
   available: boolean;
   createdAt: string;
@@ -29,7 +36,7 @@ export type NewCarFormValues = {
   seats: number;
   doors: number;
   color: string;
-  images: string[];
+  images: CarImage[];
   pricePerDay: number;
   available: boolean;
 };

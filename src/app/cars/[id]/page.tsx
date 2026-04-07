@@ -22,9 +22,11 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import Image from "next/image";
 
-export default function CarDetailPage() {
-  const params = useParams();
-  const id = params?.id as string;
+import React from "react";
+import { getImageUrl } from "@/lib/utils";
+
+export default function CarDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const {
@@ -35,6 +37,7 @@ export default function CarDetailPage() {
     queryKey: ["cars", id],
     queryFn: async () => {
       const { data } = await api.get<{ car: Car }>(`/api/cars/${id}`);
+      console.log("car",JSON.stringify(data.car))
       return data.car;
     },
   });
@@ -52,7 +55,7 @@ export default function CarDetailPage() {
 
   if (error || !car) {
     return (
-      <div className="container mx-auto py-8 px-4 text-center text-destructive py-20 mt-12 bg-destructive/10 rounded-xl max-w-2xl border border-destructive/20">
+      <div className="container mx-auto py-8 px-4 text-center text-destructive mt-12 bg-destructive/10 rounded-xl max-w-2xl border border-destructive/20">
         <h2 className="text-xl font-bold mb-2">Oops!</h2>
         <p>Failed to load car details or the car doesn't exist.</p>
         <Link
@@ -66,7 +69,7 @@ export default function CarDetailPage() {
   }
 
   const images = car.images && car.images.length > 0 ? car.images : [];
-  const currentImage = images[activeImageIndex];
+  const currentImage = images[activeImageIndex].url;
 
   const specs = [
     { label: "Fuel Type", value: car.fuelType, icon: Fuel },
@@ -94,7 +97,7 @@ export default function CarDetailPage() {
           <div className="bg-muted rounded-2xl aspect-video lg:aspect-square flex flex-col items-center justify-center border shadow-sm relative overflow-hidden group">
             {currentImage ? (
               <img
-                src={currentImage}
+                src={getImageUrl(currentImage)}
                 alt={`${car.brand} ${car.model}`}
                 className="w-full h-full object-cover"
               />
@@ -114,7 +117,7 @@ export default function CarDetailPage() {
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
               {images.map((img, idx) => (
                 <button
-                  key={idx}
+                  key={img.id || idx}
                   onClick={() => setActiveImageIndex(idx)}
                   className={`relative shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden transition-all ${
                     activeImageIndex === idx
@@ -123,7 +126,7 @@ export default function CarDetailPage() {
                   }`}
                 >
                   <img
-                    src={img}
+                    src={getImageUrl(img.url)}
                     alt={`${car.brand} thumbnail ${idx + 1}`}
                     className="w-full h-full object-cover"
                   />

@@ -12,6 +12,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Trash2, Plus } from "lucide-react";
 
+import { getImageUrl } from "@/lib/utils";
+
 export default function AdminCarsPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -85,52 +87,76 @@ export default function AdminCarsPage() {
             <p className="text-muted-foreground">No cars found</p>
           </div>
         ) : (
-          filteredCars.map((car) => (
-            <Card key={car.id} className="hover:shadow-sm transition-shadow">
-              <CardHeader>
-                <div className="flex justify-between items-start gap-2">
-                  <div>
-                    <CardTitle className="text-xl">
-                      {car.brand} {car.model}
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      {car.type}
-                    </p>
-                  </div>
-                  <Badge variant={car.available ? "default" : "secondary"}>
+          filteredCars.map((car) => {
+            const firstImage = car.images && car.images.length > 0 ? car.images[0].url : null;
+
+            return (
+              <Card
+                key={car.id}
+                className="hover:shadow-sm transition-shadow overflow-hidden group"
+              >
+                <div className="aspect-video w-full bg-muted relative border-b overflow-hidden">
+                  {firstImage ? (
+                    <img
+                      src={firstImage}
+                      alt={`${car.brand} ${car.model}`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Plus className="w-10 h-10 text-muted-foreground/20" />
+                    </div>
+                  )}
+                  <Badge
+                    variant={car.available ? "default" : "secondary"}
+                    className="absolute top-2 right-2 border shadow-sm"
+                  >
                     {car.available ? "Available" : "Booked"}
                   </Badge>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold">
-                      ${car.pricePerDay}/day
-                    </span>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => router.push(`/admin/cars/edit/${car.id}`)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => deleteMutation.mutate(car.id)}
-                        disabled={deleteMutation.isPending}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                <CardHeader className="py-4">
+                  <div className="flex justify-between items-start gap-2">
+                    <div>
+                      <CardTitle className="text-lg">
+                        {car.brand} {car.model}
+                      </CardTitle>
+                      <p className="text-xs text-muted-foreground">
+                        {car.type}
+                      </p>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold">
+                        ${car.pricePerDay}/day
+                      </span>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            router.push(`/admin/cars/edit/${car.id}`)
+                          }
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => deleteMutation.mutate(car.id)}
+                          disabled={deleteMutation.isPending}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })
         )}
       </div>
     </div>
