@@ -7,11 +7,11 @@ export default function adminLayOut({
 }) {
   return (
     <section>
-      <h1>
+      {/* <h1>
         <a href="/admin/users">users</a>{" "}
         <a href="/admin/cars">cars</a>{" "}
         <a href="/admin/bookings">bookings</a>
-      </h1>
+      </h1> */}
       {children}
     </section>
   );

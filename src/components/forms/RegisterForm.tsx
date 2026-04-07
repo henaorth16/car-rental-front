@@ -1,9 +1,9 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
-import { api } from "@/lib/axios";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,36 +17,33 @@ type RegisterFormValues = {
 
 export default function RegisterForm() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<RegisterFormValues>({
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-    },
+    defaultValues: { name: "", email: "", password: "" },
   });
 
-  const registerMutation = useMutation({
-    mutationFn: async (data: RegisterFormValues) => {
-      const res = await api.post("/api/auth/sign-up/email", data);
-      return res.data;
-    },
-    onSuccess: (data) => {
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-      }
+  const onSubmit = async (values: RegisterFormValues) => {
+    setIsLoading(true);
+    setError(null);
 
-      // redirect
-      router.push("/cars");
-    },
-    onError: (error: any) => {
-      console.error(error);
-      alert(error?.response?.data?.error || "Registration failed");
-    },
-  });
+    const { error } = await authClient.signUp.email({
+      name: values.name,
+      email: values.email,
+      password: values.password,
+      callbackURL: "/cars",
+    });
 
-  const onSubmit = (values: RegisterFormValues) => {
-    registerMutation.mutate(values);
+    setIsLoading(false);
+
+    if (error) {
+      setError(error.message ?? "Registration failed");
+      return;
+    }
+
+    router.push("/cars");
+    router.refresh();
   };
 
   return (
@@ -55,6 +52,10 @@ export default function RegisterForm() {
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <h2 className="text-xl font-semibold text-center">Register</h2>
+
+            {error && (
+              <p className="text-sm text-red-500 text-center">{error}</p>
+            )}
 
             <Input
               placeholder="Name"
@@ -71,16 +72,11 @@ export default function RegisterForm() {
             <Input
               placeholder="Password"
               type="password"
-              
               {...form.register("password", { required: true })}
             />
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={registerMutation.isPending}
-            >
-              {registerMutation.isPending ? "Registering..." : "Register"}
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Registering..." : "Register"}
             </Button>
           </form>
         </CardContent>

@@ -1,10 +1,23 @@
 "use client";
 
 import CarForm from "@/components/forms/CarForm";
+import { api } from "@/lib/axios";
+import { Car } from "@/types/car";
+import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, Car as CarIcon } from "lucide-react";
 import Link from "next/link";
 
-export default function NewCarPage() {
+export default function EditCarPage({ params }: { params: { id: string } }) {
+  const { id } = params;
+  const { data: car } = useQuery({
+    queryKey: ["car", id],
+    queryFn: () => api.get<{car: Car}>(`/api/cars/${id}`).then((res) => res.data.car),
+  });
+
+  if (!car) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="flex-1 space-y-6 p-8 pt-6 max-w-2xl mx-auto">
       {/* Header */}
@@ -31,7 +44,7 @@ export default function NewCarPage() {
       </div>
 
       {/* Form Component */}
-      <CarForm />
+      <CarForm initialData={car} />
     </div>
   );
 }

@@ -1,9 +1,9 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
-import { api } from "@/lib/axios";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,47 +16,44 @@ type LoginFormValues = {
 
 export default function LoginForm() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<LoginFormValues>({
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { email: "", password: "" },
   });
 
-  const loginMutation = useMutation({
-    mutationFn: async (data: LoginFormValues) => {
-      const res = await api.post("/api/auth/sign-in/email", data);
-      return res.data;
-    },
-    onSuccess: (data) => {
-      // save token
-      localStorage.setItem("token", data.token);
+  const onSubmit = async (values: LoginFormValues) => {
+    setIsLoading(true);
+    setError(null);
 
-      // redirect
-      router.push("/cars");
-    },
-    onError: (error: any) => {
-      console.error(error);
-      alert(error?.response?.data?.error || "Login failed");
-    },
-  });
+    const { error } = await authClient.signIn.email({
+      email: values.email,
+      password: values.password,
+      callbackURL: "/cars",
+    });
 
-  const onSubmit = (values: LoginFormValues) => {
-    loginMutation.mutate(values);
+    setIsLoading(false);
+
+    if (error) {
+      setError(error.message ?? "Login failed");
+      return;
+    }
+
+    router.push("/cars");
+    router.refresh();
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Card className="w-full max-w-sm p-6">
         <CardContent>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
-          >
-            <h2 className="text-xl font-semibold text-center">
-              Login
-            </h2>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <h2 className="text-xl font-semibold text-center">Login</h2>
+
+            {error && (
+              <p className="text-sm text-red-500 text-center">{error}</p>
+            )}
 
             <Input
               placeholder="Email"
@@ -70,12 +67,8 @@ export default function LoginForm() {
               {...form.register("password", { required: true })}
             />
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loginMutation.isPending}
-            >
-              {loginMutation.isPending ? "Logging in..." : "Login"}
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Logging in..." : "Login"}
             </Button>
           </form>
         </CardContent>
