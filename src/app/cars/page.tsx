@@ -12,7 +12,6 @@ export default function CarsListPage() {
     queryFn: async () => {
       const { data } = await api.get<Car[] | { cars: Car[] } | { data: Car[] }>("/api/cars");
       if ("cars" in data) return data.cars;
-      console.log("cars", data)
       return [];
     },
   });

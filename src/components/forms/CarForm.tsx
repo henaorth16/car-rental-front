@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Trash2, ImageIcon, Upload, X } from "lucide-react";
 import Link from "next/link";
+import { getImageUrl } from "@/lib/utils";
 
 const CAR_TYPES = [
   "Sedan",
@@ -45,7 +46,7 @@ export default function CarForm({ initialData }: CarFormProps) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [filePreviews, setFilePreviews] = useState<string[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>(
-    initialData?.images?.map(img => img.url) || []
+    initialData?.images?.map(img => getImageUrl(img.url)) || []
   );
 
   const isEdit = !!initialData;

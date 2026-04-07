@@ -98,7 +98,7 @@ export default function AdminCarsPage() {
                 <div className="aspect-video w-full bg-muted relative border-b overflow-hidden">
                   {firstImage ? (
                     <img
-                      src={firstImage}
+                      src={getImageUrl(firstImage)}
                       alt={`${car.brand} ${car.model}`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
