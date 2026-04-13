@@ -5,8 +5,6 @@ import { WhyChooseUsSection } from "@/components/landing/WhyChooseUsSection";
 import { CategoriesSection } from "@/components/landing/CategoriesSection";
 import { HowItWorksSection } from "@/components/landing/HowitWorksSection";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
-import { CTASection } from "@/components/landing/CTASection";
-import { Footer } from "@/components/landing/Footer";
 
 const Index = () => {
   return (
@@ -17,7 +15,6 @@ const Index = () => {
       <CategoriesSection />
       <HowItWorksSection />
       <TestimonialsSection />
-      <CTASection />
     </div>
   );
 };

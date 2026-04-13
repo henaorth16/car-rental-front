@@ -22,7 +22,7 @@ export default function BookingsPage() {
     queryFn: async () => {
       const response = await api.get<{ bookings: Booking[] }>('/api/bookings/my');
       // handle different structures gracefully
-      return response.data.bookings || (Array.isArray(response.data) ? response.data : []);
+      return response.data.bookings || (Array.isArray(response.data) ? response.data.bookings : []);
     },
   });
 
@@ -37,7 +37,7 @@ export default function BookingsPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto py-8 px-4 text-center text-destructive mt-12 bg-destructive/10 rounded-xl max-w-2xl border border-destructive/20">
+      <div className="container mx-auto py-8 px-4 text-center text-destructive mt-12 bg-destructive/10    max-w-2xl border border-destructive/20">
         <h2 className="text-xl font-bold mb-2">Oops!</h2>
         <p>Failed to load your bookings. You might need to be logged in.</p>
       </div>
@@ -48,8 +48,8 @@ export default function BookingsPage() {
 
   if (bookingList.length === 0) {
     return (
-      <div className="container mx-auto py-12 px-4 max-w-4xl text-center space-y-6 mt-12 border bg-card rounded-xl shadow-sm">
-        <div className="bg-muted w-24 h-24 rounded-full flex items-center justify-center mx-auto mt-6 mb-6">
+      <div className="container mx-auto py-12 px-4 max-w-4xl text-center space-y-6 mt-12 border bg-card    shadow-sm">
+        <div className="bg-muted w-24 h-24    flex items-center justify-center mx-auto mt-6 mb-6">
           <CarIcon className="w-12 h-12 text-muted-foreground" />
         </div>
         <h2 className="text-2xl font-bold">No Bookings Yet</h2>
@@ -80,10 +80,10 @@ export default function BookingsPage() {
 
   const formatDate = (dateString: string) => {
     try {
-      return new Date(dateString).toLocaleDateString(undefined, { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
+      return new Date(dateString).toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
       });
     } catch {
       return dateString;
@@ -105,13 +105,13 @@ export default function BookingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {bookingList.map((booking) => {
           const car = booking.car;
-          const carImage = car?.images && car.images.length > 0 ? getImageUrl(car.images[0].url) : null;
+          const firstImage = car?.images && car.images.length > 0 ? car.images[0].url : null;
 
           return (
-            <Card key={booking.id} className="overflow-hidden flex flex-col hover:shadow-md transition-shadow border">
-              {carImage ? (
+            <Card key={booking.id} className="overflow-hidden pt-0 flex flex-col hover:shadow-md transition-shadow border">
+              {firstImage ? (
                 <div className="h-48 w-full bg-muted border-b relative">
-                  <img src={carImage} alt={car?.model || "Car"} className="w-full h-full object-cover" />
+                  <img src={getImageUrl(firstImage)} alt={car?.model || "Car"} className="w-full h-full object-cover" />
                   <Badge className={`absolute top-4 right-4 shadow-sm border-none ${getStatusColor(booking.status)}`}>
                     {booking.status}
                   </Badge>
@@ -133,7 +133,7 @@ export default function BookingsPage() {
                   {car ? `${car.pricePerDay} ETB / per day` : '-'}
                 </CardDescription>
               </CardHeader>
-              
+
               <CardContent className="space-y-4 grow border-t pt-4">
                 <div className="flex justify-between gap-4 text-sm">
                   <div className="flex items-start gap-2">

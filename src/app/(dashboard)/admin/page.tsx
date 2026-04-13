@@ -13,7 +13,7 @@ import { Car, Booking, User, Payment } from "@/lib/types";
 
 export default function AdminDashboardPage() {
     const { data: session } = authClient.useSession();
-    
+
     const { data: cars, isLoading: isLoadingCars } = useQuery({
         queryKey: ["admin-cars"],
         queryFn: async () => {
@@ -198,7 +198,7 @@ export default function AdminDashboardPage() {
                                             </p>
                                         </div>
                                         <div className="flex items-center justify-end gap-2">
-                                            <div className={`text-xs px-2 py-1 rounded-full font-medium shadow-sm border ${booking.status === "CONFIRMED" ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 border-green-200 dark:border-green-800" :
+                                            <div className={`text-xs px-2 py-1    font-medium shadow-sm border ${booking.status === "CONFIRMED" ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 border-green-200 dark:border-green-800" :
                                                 booking.status === "PENDING" ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800" :
                                                     "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700"
                                                 }`}>
