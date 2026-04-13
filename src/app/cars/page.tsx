@@ -7,7 +7,7 @@ import { CarCard } from "@/components/CarCard";
 import { Car as CarIcon, Loader2 } from "lucide-react";
 
 export default function CarsListPage() {
-    const { data: cars, isLoading, error } = useQuery({
+  const { data: cars, isLoading, error } = useQuery({
     queryKey: ["cars"],
     queryFn: async () => {
       const { data } = await api.get<Car[] | { cars: Car[] } | { data: Car[] }>("/api/cars");
@@ -19,7 +19,7 @@ export default function CarsListPage() {
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
       <div className="flex items-center gap-3">
-        <div className="p-3 rounded-lg bg-primary/10">
+        <div className="p-3   bg-primary/10">
           <CarIcon className="h-8 w-8 text-primary" />
         </div>
         <div>
@@ -36,11 +36,11 @@ export default function CarsListPage() {
           <p className="text-muted-foreground font-medium">Loading fleet...</p>
         </div>
       ) : error ? (
-        <div className="text-center py-20 text-destructive bg-destructive/10 rounded-xl border border-destructive/20 max-w-2xl mx-auto mt-8">
+        <div className="text-center py-20 text-destructive bg-destructive/10    border border-destructive/20 max-w-2xl mx-auto mt-8">
           Failed to load cars. Please try again later.
         </div>
       ) : !cars || cars.length === 0 ? (
-        <div className="text-center py-32 text-muted-foreground bg-muted/30 rounded-xl border border-dashed flex flex-col items-center mt-8">
+        <div className="text-center py-32 text-muted-foreground bg-muted/30    border border-dashed flex flex-col items-center mt-8">
           <CarIcon className="w-16 h-16 text-muted-foreground/50 mb-4" />
           <p className="text-lg font-medium">No cars available at the moment.</p>
         </div>

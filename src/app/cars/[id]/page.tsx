@@ -18,7 +18,7 @@ import {
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import Image from "next/image";
 
@@ -28,7 +28,7 @@ import { getImageUrl } from "@/lib/utils";
 export default function CarDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-
+  const router = useRouter()
   const {
     data: car,
     isLoading,
@@ -37,7 +37,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
     queryKey: ["cars", id],
     queryFn: async () => {
       const { data } = await api.get<{ car: Car }>(`/api/cars/${id}`);
-      console.log("car",JSON.stringify(data.car))
+      console.log("car", JSON.stringify(data.car))
       return data.car;
     },
   });
@@ -55,7 +55,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
 
   if (error || !car) {
     return (
-      <div className="container mx-auto py-8 px-4 text-center text-destructive mt-12 bg-destructive/10 rounded-xl max-w-2xl border border-destructive/20">
+      <div className="container mx-auto py-8 px-4 text-center text-destructive mt-12 bg-destructive/10    max-w-2xl border border-destructive/20">
         <h2 className="text-xl font-bold mb-2">Oops!</h2>
         <p>Failed to load car details or the car doesn't exist.</p>
         <Link
@@ -94,7 +94,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Left Col: Image Gallery */}
         <div className="space-y-4">
-          <div className="bg-muted rounded-2xl aspect-video lg:aspect-square flex flex-col items-center justify-center border shadow-sm relative overflow-hidden group">
+          <div className="bg-muted    aspect-video lg:aspect-square flex flex-col items-center justify-center border shadow-sm relative overflow-hidden group">
             {currentImage ? (
               <img
                 src={getImageUrl(currentImage)}
@@ -119,11 +119,10 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                 <button
                   key={img.id || idx}
                   onClick={() => setActiveImageIndex(idx)}
-                  className={`relative shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden transition-all ${
-                    activeImageIndex === idx
-                      ? "border-primary scale-95"
-                      : "border-transparent opacity-70 hover:opacity-100"
-                  }`}
+                  className={`relative shrink-0 w-20 h-20   border-2 overflow-hidden transition-all ${activeImageIndex === idx
+                    ? "border-primary scale-95"
+                    : "border-transparent opacity-70 hover:opacity-100"
+                    }`}
                 >
                   <img
                     src={getImageUrl(img.url)}
@@ -167,9 +166,9 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
             {specs.map((spec) => (
               <div
                 key={spec.label}
-                className="flex items-center gap-3 p-3 bg-muted/40 rounded-xl border hover:shadow-sm transition-all"
+                className="flex items-center gap-3 p-3 bg-muted/40    border hover:shadow-sm transition-all"
               >
-                <div className="p-2 bg-primary/10 rounded-lg shrink-0">
+                <div className="p-2 bg-primary/10   shrink-0">
                   <spec.icon className="w-5 h-5 text-primary" />
                 </div>
                 <div>
@@ -193,7 +192,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
           </div>
 
           <div className="pt-4 space-y-6">
-            <div className="p-5 border rounded-xl bg-card shadow-sm">
+            <div className="p-5 border    bg-card shadow-sm">
               <h3 className="font-semibold mb-2">Rental Requirements</h3>
               <ul className="text-sm text-muted-foreground space-y-2 list-disc list-inside">
                 <li>Valid driver's license</li>
@@ -204,6 +203,9 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
 
             <Button
               size="lg"
+              onClick={() => {
+                car.available && router.push(`/bookings/new?carId=${car.id}`);
+              }}
               className="w-full text-lg h-14 shadow-md hover:shadow-lg transition-all"
               disabled={!car.available}
             >

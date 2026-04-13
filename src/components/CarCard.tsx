@@ -13,7 +13,7 @@ export function CarCard({ car }: { car: Car }) {
   const firstImage = car.images && car.images.length > 0 ? car.images[0].url : null;
 
   return (
-    <Card className="flex flex-col overflow-hidden hover:shadow-lg transition-shadow group">
+    <Card className="flex py-0 flex-col overflow-hidden hover:shadow-lg transition-shadow group">
       {/* Image Placeholder or Actual Image */}
       <div className="w-full h-48 bg-muted flex items-center justify-center border-b relative overflow-hidden">
         {firstImage ? (

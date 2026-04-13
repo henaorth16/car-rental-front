@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, ImageIcon, Upload, X } from "lucide-react";
+import { ImageIcon, Upload, X } from "lucide-react";
 import Link from "next/link";
 import { getImageUrl } from "@/lib/utils";
 
@@ -54,33 +54,33 @@ export default function CarForm({ initialData }: CarFormProps) {
   const form = useForm<NewCarFormValues>({
     defaultValues: initialData
       ? {
-          brand: initialData.brand,
-          model: initialData.model,
-          type: initialData.type,
-          fuelType: initialData.fuelType,
-          transmission: initialData.transmission,
-          description: initialData.description,
-          seats: initialData.seats,
-          doors: initialData.doors,
-          color: initialData.color,
-          images: initialData.images, // We still keep this in defaultValues but will manage submission manually
-          pricePerDay: initialData.pricePerDay,
-          available: initialData.available,
-        }
+        brand: initialData.brand,
+        model: initialData.model,
+        type: initialData.type,
+        fuelType: initialData.fuelType,
+        transmission: initialData.transmission,
+        description: initialData.description,
+        seats: initialData.seats,
+        doors: initialData.doors,
+        color: initialData.color,
+        images: initialData.images, // We still keep this in defaultValues but will manage submission manually
+        pricePerDay: initialData.pricePerDay,
+        available: initialData.available,
+      }
       : {
-          brand: "",
-          model: "",
-          type: "Sedan",
-          fuelType: "PETROL",
-          transmission: "MANUAL",
-          description: "",
-          seats: 5,
-          doors: 4,
-          color: "",
-          images: [],
-          pricePerDay: 0,
-          available: true,
-        },
+        brand: "",
+        model: "",
+        type: "Sedan",
+        fuelType: "PETROL",
+        transmission: "MANUAL",
+        description: "",
+        seats: 5,
+        doors: 4,
+        color: "",
+        images: [],
+        pricePerDay: 0,
+        available: true,
+      },
   });
 
   const {
@@ -148,7 +148,7 @@ export default function CarForm({ initialData }: CarFormProps) {
     if (files.length === 0) return;
 
     setSelectedFiles((prev) => [...prev, ...files]);
-    
+
     // Create previews
     const newPreviews = files.map((file) => URL.createObjectURL(file));
     setFilePreviews((prev) => [...prev, ...newPreviews]);
@@ -227,11 +227,10 @@ export default function CarForm({ initialData }: CarFormProps) {
                     key={type}
                     type="button"
                     onClick={() => setValue("type", type)}
-                    className={`px-3 py-1.5 rounded-full text-sm border transition-all ${
-                      selected
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "border-border hover:border-primary/50 hover:bg-muted"
-                    }`}
+                    className={`px-3 py-1.5    text-sm border transition-all ${selected
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "border-border hover:border-primary/50 hover:bg-muted"
+                      }`}
                   >
                     {type}
                   </button>
@@ -255,11 +254,10 @@ export default function CarForm({ initialData }: CarFormProps) {
                       key={ft}
                       type="button"
                       onClick={() => setValue("fuelType", ft)}
-                      className={`px-3 py-1.5 rounded-md text-sm border capitalize transition-all ${
-                        selected
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "border-border hover:border-primary/50 hover:bg-muted"
-                      }`}
+                      className={`px-3 py-1.5    text-sm border capitalize transition-all ${selected
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "border-border hover:border-primary/50 hover:bg-muted"
+                        }`}
                     >
                       {ft}
                     </button>
@@ -281,11 +279,10 @@ export default function CarForm({ initialData }: CarFormProps) {
                       key={tr}
                       type="button"
                       onClick={() => setValue("transmission", tr)}
-                      className={`px-3 py-1.5 rounded-md text-sm border capitalize transition-all ${
-                        selected
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "border-border hover:border-primary/50 hover:bg-muted"
-                      }`}
+                      className={`px-3 py-1.5    text-sm border capitalize transition-all ${selected
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "border-border hover:border-primary/50 hover:bg-muted"
+                        }`}
                     >
                       {tr}
                     </button>
@@ -335,7 +332,7 @@ export default function CarForm({ initialData }: CarFormProps) {
               Description <span className="text-red-500">*</span>
             </label>
             <textarea
-              className="flex min-h-[100px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex min-h-[100px] w-full    border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
               placeholder="Describe the car's features, condition, etc."
               {...register("description", { required: true })}
             />
@@ -370,12 +367,12 @@ export default function CarForm({ initialData }: CarFormProps) {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {/* Existing Images (When Editing) */}
               {existingImages.map((url, index) => (
-                <div key={`existing-${index}`} className="relative group aspect-square rounded-lg border overflow-hidden bg-muted">
+                <div key={`existing-${index}`} className="relative group aspect-square   border overflow-hidden bg-muted">
                   <img src={url} alt="Existing" className="w-full h-full object-cover" />
                   <button
                     type="button"
                     onClick={() => removeExistingImage(index)}
-                    className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                    className="absolute top-1 right-1 p-1 bg-red-500 text-white    opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -387,12 +384,12 @@ export default function CarForm({ initialData }: CarFormProps) {
 
               {/* Newly Selected Files */}
               {filePreviews.map((preview, index) => (
-                <div key={`new-${index}`} className="relative group aspect-square rounded-lg border overflow-hidden bg-muted">
+                <div key={`new-${index}`} className="relative group aspect-square   border overflow-hidden bg-muted">
                   <img src={preview} alt="New" className="w-full h-full object-cover" />
                   <button
                     type="button"
                     onClick={() => removeSelectedFile(index)}
-                    className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                    className="absolute top-1 right-1 p-1 bg-red-500 text-white    opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -403,9 +400,9 @@ export default function CarForm({ initialData }: CarFormProps) {
               ))}
 
               {existingImages.length === 0 && selectedFiles.length === 0 && (
-                <div 
+                <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="col-span-full border-2 border-dashed rounded-lg bg-muted/30 p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                  className="col-span-full border-2 border-dashed   bg-muted/30 p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
                 >
                   <ImageIcon className="h-10 w-10 text-muted-foreground mb-2" />
                   <p className="text-sm text-muted-foreground font-medium">No images uploaded yet</p>
@@ -444,7 +441,7 @@ export default function CarForm({ initialData }: CarFormProps) {
           </div>
 
           {/* Availability toggle */}
-          <div className="flex items-center justify-between rounded-lg border p-4">
+          <div className="flex items-center justify-between   border p-4">
             <div>
               <p className="text-sm font-medium">Available for Rental</p>
               <p className="text-xs text-muted-foreground">
@@ -456,14 +453,12 @@ export default function CarForm({ initialData }: CarFormProps) {
               role="switch"
               aria-checked={isAvailable}
               onClick={() => setValue("available", !isAvailable)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                isAvailable ? "bg-black" : "bg-muted"
-              }`}
+              className={`relative inline-flex h-6 w-11 items-center    transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isAvailable ? "bg-black" : "bg-muted"
+                }`}
             >
               <span
-                className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
-                  isAvailable ? "translate-x-6" : "translate-x-1"
-                }`}
+                className={`inline-block h-4 w-4    bg-white shadow-sm transition-transform ${isAvailable ? "translate-x-6" : "translate-x-1"
+                  }`}
               />
             </button>
             <input type="hidden" {...register("available")} />
@@ -489,12 +484,12 @@ export default function CarForm({ initialData }: CarFormProps) {
                   ? "Updating Car..."
                   : "Adding Car..."
                 : isEdit
-                ? "Update Car"
-                : "Add Car"}
+                  ? "Update Car"
+                  : "Add Car"}
             </Button>
             <Link
               href="/admin/cars"
-              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="inline-flex items-center justify-center    border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               Cancel
             </Link>
