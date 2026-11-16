@@ -6,7 +6,7 @@ export interface User {
   id: string;
   name?: string;
   email?: string;
-  role: "USER" | "ADMIN";
+  role: "USER" | "AGENT" | "ADMIN";
 }
 
 export interface Booking {
@@ -20,6 +20,7 @@ export interface Booking {
   updatedAt: string;
   user?: User;
   car?: Car;
+  payment?: Payment;
 }
 
 export interface Payment {

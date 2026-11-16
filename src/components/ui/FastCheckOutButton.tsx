@@ -20,8 +20,9 @@ export default function FastCheckoutButton({ bookingId }: { bookingId: string })
     },
     onSuccess: (data) => {
       // If the backend returns a checkout URL, redirect the user
-      if (data?.url || data?.checkoutUrl) {
-        window.location.href = data.url || data.checkoutUrl;
+      const redirectUrl = data?.result?.url || data?.url || data?.checkoutUrl;
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
       } else {
         setSuccess(true);
         queryClient.invalidateQueries({ queryKey: ["myBookings"] });
