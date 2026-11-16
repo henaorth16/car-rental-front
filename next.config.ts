@@ -15,7 +15,17 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "localhost",
         port: "5000",
-        pathname: "/uploads/cars/**",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "https",
+        hostname: "carrentapp-six.vercel.app",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.vercel.app",
+        pathname: "/uploads/**",
       },
     ],
   },
