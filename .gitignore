@@ -34,6 +34,7 @@ yarn-error.log*
 .env*
 
 car_rental_backend_API.txt
+car_rental_backend_spec.txt
 system_specification.md
 
 # vercel
