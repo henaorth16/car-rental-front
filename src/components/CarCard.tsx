@@ -5,7 +5,7 @@ import { Car } from "@/lib/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Car as CarIcon } from "lucide-react";
+import { Car as CarIcon, Fuel, Settings2, Users } from "lucide-react";
 
 import { getImageUrl } from "@/lib/utils";
 
@@ -39,7 +39,28 @@ export function CarCard({ car }: { car: Car }) {
         </div>
       </CardHeader>
       
-      <CardContent className="grow space-y-4">
+      <CardContent className="grow space-y-3">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground flex-wrap">
+          {car.transmission && (
+            <span className="inline-flex items-center gap-1 bg-muted/60 px-2 py-0.5 rounded text-[11px] font-medium capitalize">
+              <Settings2 className="w-3 h-3 text-primary" />
+              {car.transmission.toLowerCase()}
+            </span>
+          )}
+          {car.fuelType && (
+            <span className="inline-flex items-center gap-1 bg-muted/60 px-2 py-0.5 rounded text-[11px] font-medium capitalize">
+              <Fuel className="w-3 h-3 text-primary" />
+              {car.fuelType.toLowerCase()}
+            </span>
+          )}
+          {car.seats && (
+            <span className="inline-flex items-center gap-1 bg-muted/60 px-2 py-0.5 rounded text-[11px] font-medium">
+              <Users className="w-3 h-3 text-primary" />
+              {car.seats} seats
+            </span>
+          )}
+        </div>
+
         <div className="text-2xl font-bold">
           {car.pricePerDay} ETB<span className="text-sm font-normal text-muted-foreground"> / day</span>
         </div>

@@ -69,7 +69,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
   }
 
   const images = car.images && car.images.length > 0 ? car.images : [];
-  const currentImage = images[activeImageIndex].url;
+  const currentImage = images[activeImageIndex]?.url;
 
   const specs = [
     { label: "Fuel Type", value: car.fuelType, icon: Fuel },
