@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { ImageIcon, Upload, X } from "lucide-react";
 import Link from "next/link";
 import { getImageUrl } from "@/lib/utils";
+import { toast } from "sonner";
 
 const CAR_TYPES = [
   "Sedan",
@@ -45,6 +46,7 @@ export default function CarForm({ initialData }: CarFormProps) {
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [filePreviews, setFilePreviews] = useState<string[]>([]);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [existingImages, setExistingImages] = useState<string[]>(
     initialData?.images?.map(img => getImageUrl(img.url)) || []
   );
@@ -134,12 +136,23 @@ export default function CarForm({ initialData }: CarFormProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-cars"] });
+      toast.success(isEdit ? "Vehicle updated successfully!" : "Vehicle added to fleet successfully!");
       router.push("/admin/cars");
       router.refresh();
+    },
+    onError: (err: any) => {
+      const msg =
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to save vehicle details.";
+      setErrorMsg(msg);
+      toast.error(msg);
     },
   });
 
   const onSubmit = (values: NewCarFormValues) => {
+    setErrorMsg(null);
     carMutation.mutate(values);
   };
 
@@ -185,6 +198,12 @@ export default function CarForm({ initialData }: CarFormProps) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {errorMsg && (
+            <div className="p-3 bg-destructive/10 text-destructive text-sm rounded-lg border border-destructive/20 font-medium">
+              {errorMsg}
+            </div>
+          )}
+
           {/* Brand & Model */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">

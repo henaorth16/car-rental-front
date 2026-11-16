@@ -1,18 +1,15 @@
-import { ReactHTMLElement } from "react";
+"use client";
 
-export default function adminLayOut({
+import ManagementGuard from "@/components/auth/ManagementGuard";
+
+export default function AdminLayOut({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <section>
-      {/* <h1>
-        <a href="/admin/users">users</a>{" "}
-        <a href="/admin/cars">cars</a>{" "}
-        <a href="/admin/bookings">bookings</a>
-      </h1> */}
-      {children}
-    </section>
+    <ManagementGuard>
+      <section>{children}</section>
+    </ManagementGuard>
   );
 }
