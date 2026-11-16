@@ -16,7 +16,7 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-12 mb-12">
           <div>
             <h3 className="text-xl font-bold font-display text-white mb-4">
-              Drive<span className="text-gradient">X</span>
+              Hashiri
             </h3>
             <p className="text-sm leading-relaxed text-white/50">
               Premium car rentals for every journey. Fast, reliable, and always at your service.

@@ -1,5 +1,5 @@
 import RegisterForm from "@/components/forms/RegisterForm";
 
 export default function Register() {
-  return <RegisterForm />;
+  return <RegisterForm audience="user" />;
 }
